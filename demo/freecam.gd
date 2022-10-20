@@ -1,15 +1,8 @@
 extends Camera3D
 
-
 var move_delta : Vector3 = Vector3.ZERO
 var look_delta : Vector3 = Vector3.ZERO
 
-
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	pass # Replace with function body.
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
 	position += quaternion * move_delta * delta
 	rotation -= look_delta * delta * 0.5
