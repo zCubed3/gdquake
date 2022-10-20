@@ -1,4 +1,4 @@
-#include "quakepakfile.h"
+#include "quake_pakfile.h"
 
 #include <godot_cpp/variant/utility_functions.hpp>
 #include <godot_cpp/classes/project_settings.hpp>
@@ -7,17 +7,19 @@
 #include <cstdio>
 #include <string>
 
+#include "quake_mesh.h"
+
 // QuakePakEntry
 namespace godot::gdquake {
     //
     // Godot functions
     //
     QuakePakEntry::QuakePakEntry() {
-    	UtilityFunctions::print("PakEntry created.");
+
     }
 
     QuakePakEntry::~QuakePakEntry() {
-    	UtilityFunctions::print("PakEntry destroyed.");
+    	UtilityFunctions::print("QuakePakEntry destroyed.");
     }
 
     void QuakePakEntry::_notification(int p_what) {
@@ -33,7 +35,7 @@ namespace godot::gdquake {
     }
 
     String QuakePakEntry::_to_string() const {
-    	return "<PakEntry:" + itos(get_instance_id()) + ">";
+    	return "<QuakePakEntry:" + itos(get_instance_id()) + ">";
     }
 
     void QuakePakEntry::_get_property_list(List<PropertyInfo> *p_list) const {
@@ -49,7 +51,7 @@ namespace godot::gdquake {
     };
 
     void QuakePakEntry::_bind_methods() {
-        // TODO: Wait until Godot 4 fixes _get_property_list?
+        // TODO: Is _get_property_list bugged?
         ClassDB::bind_method(D_METHOD("get_path"), &QuakePakEntry::get_path);
     }
 
@@ -87,7 +89,7 @@ namespace godot::gdquake {
     }
 
     String QuakePakFile::_to_string() const {
-    	return "<PakFile:" + itos(get_instance_id()) + ">";
+    	return "<QuakePakFile:#" + itos(get_instance_id()) + ">";
     }
 
     void QuakePakFile::_get_property_list(List<PropertyInfo> *p_list) const {
@@ -103,11 +105,13 @@ namespace godot::gdquake {
     };
 
     void QuakePakFile::_bind_methods() {
-        ClassDB::bind_method(D_METHOD("load", "path"), &QuakePakFile::load_file);
+        ClassDB::bind_method(D_METHOD("open", "path"), &QuakePakFile::load_file);
 
-	    ClassDB::bind_method(D_METHOD("get_entries"), &QuakePakFile::get_entries);
-	    ClassDB::bind_method(D_METHOD("set_entries", "replacement"), &QuakePakFile::set_entries);
-        ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "entries"), "set_entries", "get_entries");
+	    ClassDB::bind_method(D_METHOD("get_entry_array"), &QuakePakFile::get_entry_array);
+        ClassDB::bind_method(D_METHOD("get_entry"), &QuakePakFile::get_entry);
+        ClassDB::bind_method(D_METHOD("load_mdl"), &QuakePakFile::load_mdl);
+	    //ClassDB::bind_method(D_METHOD("set_entries", "replacement"), &QuakePakFile::set_entries);
+        //ADD_PROPERTY(PropertyInfo(Variant::ARRAY, "entries"), "set_entries", "get_entries");
     }
 
     //
@@ -144,6 +148,7 @@ namespace godot::gdquake {
 
         // We need to convert the entries to godot safe types
         // This is because Godot tends to convert data internally to safer types, this just helps make that process easier
+        // Plus this lets us access entries in GDScript :)
         entry_array.clear();
         entry_array.resize(entry_count);
         for (int e = 0; e < entry_count; e++) {
@@ -159,11 +164,38 @@ namespace godot::gdquake {
         std::free(entries);
     }
 
-    TypedArray<QuakePakEntry> QuakePakFile::get_entries() const {
+    TypedArray<QuakePakEntry> QuakePakFile::get_entry_array() const {
         return entry_array;
     }
 
-    void QuakePakFile::set_entries(const TypedArray<QuakePakEntry> &entries) {
-        entry_array = entries;
+    QuakePakEntry* QuakePakFile::get_entry(const String& path) {
+        for (int e = 0; e < entry_array.size(); e++) {
+            QuakePakEntry* entry = cast_to<QuakePakEntry>(entry_array[e]);
+
+            if (entry == nullptr)
+                continue;
+
+            if (entry->path == path)
+                return entry;
+        }
+
+        return nullptr;
+    }
+
+    QuakeMesh* QuakePakFile::load_mdl(const String& path) {
+        QuakePakEntry* entry = get_entry(path);
+
+        if (entry == nullptr)
+            return nullptr;
+
+        fseek(file, entry->offset, SEEK_SET);
+        
+        QuakeMesh* mesh = memnew(QuakeMesh);
+        if (!mesh->load_from_file(this)) {
+            memdelete(mesh);
+            return nullptr;
+        }
+        else
+            return mesh;
     }
 }

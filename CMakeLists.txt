@@ -87,7 +87,7 @@ else()
 
 	if(CMAKE_BUILD_TYPE MATCHES Debug)
 		set(GODOT_COMPILE_FLAGS "${GODOT_COMPILE_FLAGS} -fno-omit-frame-pointer -O0")
-		target_compile_definitions(${PROJECT_NAME} PUBLIC GDQUAKE_DEBUG)
+		#target_compile_definitions(${PROJECT_NAME} PUBLIC GDQUAKE_DEBUG)
 	else()
 		set(GODOT_COMPILE_FLAGS "${GODOT_COMPILE_FLAGS} -O3")
 	endif(CMAKE_BUILD_TYPE MATCHES Debug)

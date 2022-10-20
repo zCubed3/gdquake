@@ -14,7 +14,8 @@
 #include "example.h"
 #include "tests.h"
 
-#include "quakepakfile.h"
+#include "quake_pakfile.h"
+#include "quake_mesh.h"
 
 using namespace godot;
 
@@ -23,9 +24,7 @@ void initialize_gdquake(ModuleInitializationLevel p_level) {
 		return;
 	}
 
-	//ClassDB::register_class<ExampleRef>();
-	//ClassDB::register_class<ExampleMin>();
-	//ClassDB::register_class<Example>();
+	ClassDB::register_class<gdquake::QuakeMesh>();
 
 	ClassDB::register_class<gdquake::QuakePakEntry>();
 	ClassDB::register_class<gdquake::QuakePakFile>();

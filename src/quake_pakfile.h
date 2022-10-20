@@ -1,5 +1,5 @@
-#ifndef GDQUAKE_QUAKEPAKFILE_H
-#define GDQUAKE_QUAKEPAKFILE_H
+#ifndef GDQUAKE_QUAKE_PAKFILE_H
+#define GDQUAKE_QUAKE_PAKFILE_H
 
 #include <cstdint>
 #include <cstdio>
@@ -25,6 +25,8 @@ namespace godot::gdquake {
 			uint32_t size;
 		} PakEntry_t;
 	}
+
+	class QuakeMesh;
 
 	class QuakePakEntry : public Object {
 		GDCLASS(QuakePakEntry, Object);
@@ -74,8 +76,11 @@ namespace godot::gdquake {
 
 		void load_file(const String& path);
 		
-		void set_entries(const TypedArray<QuakePakEntry> &entries);
-		TypedArray<QuakePakEntry> get_entries() const;
+		TypedArray<QuakePakEntry> get_entry_array() const;
+		
+		QuakePakEntry* get_entry(const String& path);
+
+		QuakeMesh* load_mdl(const String& path);
 
 	public:
 		// For safety reasons the C style data-types are not persistent outside of their respective functions
@@ -86,4 +91,4 @@ namespace godot::gdquake {
 	};
 }
 
-#endif // GDQUAKE_PAKFILE_H
+#endif // GDQUAKE_QUAKE_PAKFILE_H
