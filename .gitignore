@@ -1,8 +1,11 @@
 # Generated directories with binaries
 build
 bin
+
+# Things we shouldn't include
 *.obj
 *.dblite
+*.pak
 
 # Godot 4+ specific ignores
 .godot/
@@ -23,5 +26,6 @@ data_*/
 mono_crash.*.json
 
 # System/tool-specific ignores
+.vscode
 .directory
 *~

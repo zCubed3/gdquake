@@ -1,8 +1,8 @@
-project(godot-cpp-test)
+project(gdquake)
 cmake_minimum_required(VERSION 3.6)
 
-set(GODOT_HEADERS_PATH ../godot-cpp/godot-headers/ CACHE STRING "Path to Godot headers")
-set(CPP_BINDINGS_PATH ../godot-cpp/ CACHE STRING "Path to C++ bindings")
+set(GODOT_HEADERS_PATH ./godot-cpp/godot-headers/ CACHE STRING "Path to Godot headers")
+set(CPP_BINDINGS_PATH ./godot-cpp/ CACHE STRING "Path to C++ bindings")
 
 if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 	set(TARGET_PATH x11)
@@ -87,6 +87,7 @@ else()
 
 	if(CMAKE_BUILD_TYPE MATCHES Debug)
 		set(GODOT_COMPILE_FLAGS "${GODOT_COMPILE_FLAGS} -fno-omit-frame-pointer -O0")
+		target_compile_definitions(${PROJECT_NAME} PUBLIC GDQUAKE_DEBUG)
 	else()
 		set(GODOT_COMPILE_FLAGS "${GODOT_COMPILE_FLAGS} -O3")
 	endif(CMAKE_BUILD_TYPE MATCHES Debug)
